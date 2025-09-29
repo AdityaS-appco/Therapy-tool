@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YourDOST AI Matching Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .processing {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e0e6ed;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .therapist-card {
+            border: 2px solid #e0e6ed;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .therapist-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .therapist-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(135deg, #ff6b6b, #667eea);
+        }
+
+        .compatibility-score {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .therapist-name {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            margin-top: 20px;
+        }
+
+        .therapist-specialization {
+            color: #667eea;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .therapist-details {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .match-reasons {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .match-reasons h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .match-reasons ul {
+            list-style: none;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .match-reasons li {
+            margin-bottom: 4px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .match-reasons li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #4ecdc4;
+            font-weight: 600;
+        }
+
+        .book-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .book-btn:hover {
+            background: linear-gradient(135deg, #ff5252, #ff7979);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e0e6ed;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 AI Therapist Matching</h1>
+            <p>Find your perfect mental health professional using AI</p>
+        </div>
+        
+        <div class="content">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+
+            <!-- Step 1: Basic Info -->
+            <div class="step active" id="step1">
+                <h2>Let's get to know you better</h2>
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label for="age">Age Range</label>
+                    <select id="age">
+                        <option value="">Select your age range</option>
+                        <option value="18-25">18-25</option>
+                        <option value="26-35">26-35</option>
+                        <option value="36-45">36-45</option>
+                        <option value="46-55">46-55</option>
+                        <option value="55+">55+</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender Identity</label>
+                    <select id="gender">
+                        <option value="">Select gender identity</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="non-binary">Non-binary</option>
+                        <option value="prefer-not-to-say">Prefer not to say</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="nextStep(2)">Continue</button>
+            </div>
+
+            <!-- Step 2: Mental Health Concerns -->
+            <div class="step" id="step2">
+                <h2>What brings you here today?</h2>
+                <div class="form-group">
+                    <label>Select your main concerns (check all that apply):</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="anxiety" value="anxiety">
+                            <label for="anxiety">Anxiety & Stress</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="depression" value="depression">
+                            <label for="depression">Depression</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="relationships" value="relationships">
+                            <label for="relationships">Relationship Issues</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="work-stress" value="work-stress">
+                            <label for="work-stress">Work-related Stress</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="self-esteem" value="self-esteem">
+                            <label for="self-esteem">Self-esteem Issues</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="trauma" value="trauma">
+                            <label for="trauma">Trauma & PTSD</label>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn" onclick="nextStep(3)">Continue</button>
+            </div>
+
+            <!-- Step 3: Preferences -->
+            <div class="step" id="step3">
+                <h2>Your therapy preferences</h2>
+                <div class="form-group">
+                    <label for="therapist-gender">Preferred therapist gender</label>
+                    <select id="therapist-gender">
+                        <option value="">No preference</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="non-binary">Non-binary</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="therapy-approach">Preferred therapy approach</label>
+                    <select id="therapy-approach">
+                        <option value="">No preference</option>
+                        <option value="cbt">Cognitive Behavioral Therapy (CBT)</option>
+                        <option value="humanistic">Humanistic/Person-Centered</option>
+                        <option value="psychodynamic">Psychodynamic</option>
+                        <option value="mindfulness">Mindfulness-based</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="communication-style">How do you prefer to communicate?</label>
+                    <textarea id="communication-style" rows="3" placeholder="e.g., I prefer direct feedback, I need gentle encouragement, I like structured sessions..."></textarea>
+                </div>
+                <button class="btn" onclick="findMatches()">Find My Matches</button>
+            </div>
+
+            <!-- Processing Step -->
+            <div class="step" id="processing">
+                <div class="processing">
+                    <div class="spinner"></div>
+                    <h2>🤖 AI is analyzing your profile...</h2>
+                    <p>Finding the best therapist matches based on your preferences</p>
+                    <div id="processing-status" style="margin-top: 20px; font-weight: 500; color: #667eea;"></div>
+                </div>
+            </div>
+
+            <!-- Results Step -->
+            <div class="step" id="results">
+                <h2>Your Top Therapist Matches</h2>
+                <p style="margin-bottom: 20px; color: #666;">Based on your preferences, here are your most compatible therapists:</p>
+                <div class="results-container" id="resultsContainer">
+                    <!-- Results will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        function updateProgress() {
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function nextStep(step) {
+            // Hide current step
+            document.getElementById('step' + currentStep).classList.remove('active');
+            
+            // Show next step
+            currentStep = step;
+            document.getElementById('step' + currentStep).classList.add('active');
+            
+            updateProgress();
+        }
+
+        function findMatches() {
+            // Collect form data
+            const formData = {
+                name: document.getElementById('name').value,
+                age: document.getElementById('age').value,
+                gender: document.getElementById('gender').value,
+                concerns: Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value),
+                therapistGender: document.getElementById('therapist-gender').value,
+                therapyApproach: document.getElementById('therapy-approach').value,
+                communicationStyle: document.getElementById('communication-style').value
+            };
+
+            // Show processing
+            document.getElementById('step' + currentStep).classList.remove('active');
+            document.getElementById('processing').classList.add('active');
+
+            // Simulate AI processing with status updates
+            const statusElement = document.getElementById('processing-status');
+            const statusUpdates = [
+                'Analyzing your mental health concerns...',
+                'Matching communication styles...',
+                'Evaluating therapist specializations...',
+                'Calculating compatibility scores...',
+                'Finalizing your matches...'
+            ];
+
+            let statusIndex = 0;
+            const statusInterval = setInterval(() => {
+                if (statusIndex < statusUpdates.length) {
+                    statusElement.textContent = statusUpdates[statusIndex];
+                    statusIndex++;
+                } else {
+                    clearInterval(statusInterval);
+                    showResults(formData);
+                }
+            }, 800);
+        }
+
+        function showResults(formData) {
+            // Generate therapist matches based on form data
+            const therapists = generateMatches(formData);
+            
+            // Hide processing and show results
+            document.getElementById('processing').classList.remove('active');
+            document.getElementById('results').classList.add('active');
+
+            // Populate results
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = therapists.map(therapist => `
+                <div class="therapist-card">
+                    <div class="compatibility-score">${therapist.compatibility}% Match</div>
+                    <div class="therapist-name">Dr. ${therapist.name}</div>
+                    <div class="therapist-specialization">${therapist.specialization}</div>
+                    <div class="therapist-details">
+                        <strong>Experience:</strong> ${therapist.experience} years<br>
+                        <strong>Approach:</strong> ${therapist.approach}<br>
+                        <strong>Languages:</strong> ${therapist.languages}
+                    </div>
+                    <div class="match-reasons">
+                        <h4>Why this match works for you:</h4>
+                        <ul>
+                            ${therapist.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <button class="book-btn" onclick="bookSession('${therapist.name}')">Book Consultation</button>
+                </div>
+            `).join('');
+        }
+
+        function generateMatches(formData) {
+            // Simulate AI matching logic
+            const therapistPool = [
+                {
+                    name: 'Sarah Johnson',
+                    specialization: 'Anxiety & Stress Management',
+                    experience: 8,
+                    approach: 'CBT & Mindfulness',
+                    languages: 'English, Hindi',
+                    gender: 'female'
+                },
+                {
+                    name: 'Rajesh Kumar',
+                    specialization: 'Depression & Mood Disorders',
+                    experience: 12,
+                    approach: 'Humanistic & Psychodynamic',
+                    languages: 'English, Hindi, Tamil',
+                    gender: 'male'
+                },
+                {
+                    name: 'Priya Sharma',
+                    specialization: 'Relationship & Family Therapy',
+                    experience: 6,
+                    approach: 'Person-Centered & CBT',
+                    languages: 'English, Hindi, Punjabi',
+                    gender: 'female'
+                },
+                {
+                    name: 'Michael Chen',
+                    specialization: 'Work-Life Balance & Career Counseling',
+                    experience: 10,
+                    approach: 'Solution-Focused & Mindfulness',
+                    languages: 'English, Mandarin',
+                    gender: 'male'
+                }
+            ];
+
+            // Simple matching algorithm
+            return therapistPool.map(therapist => {
+                let compatibility = 70; // Base score
+                let reasons = [];
+
+                // Match concerns
+                if (formData.concerns.includes('anxiety') && therapist.specialization.includes('Anxiety')) {
+                    compatibility += 15;
+                    reasons.push('Specializes in anxiety treatment');
+                }
+                if (formData.concerns.includes('depression') && therapist.specialization.includes('Depression')) {
+                    compatibility += 15;
+                    reasons.push('Expert in depression therapy');
+                }
+                if (formData.concerns.includes('relationships') && therapist.specialization.includes('Relationship')) {
+                    compatibility += 15;
+                    reasons.push('Specializes in relationship counseling');
+                }
+                if (formData.concerns.includes('work-stress') && therapist.specialization.includes('Work')) {
+                    compatibility += 15;
+                    reasons.push('Expert in work-related stress');
+                }
+
+                // Match gender preference
+                if (formData.therapistGender === therapist.gender) {
+                    compatibility += 10;
+                    reasons.push(`Matches your preferred therapist gender`);
+                }
+
+                // Match therapy approach
+                if (formData.therapyApproach && therapist.approach.toLowerCase().includes(formData.therapyApproach)) {
+                    compatibility += 12;
+                    reasons.push(`Uses your preferred therapy approach`);
+                }
+
+                // Communication style matching (simplified)
+                if (formData.communicationStyle && formData.communicationStyle.toLowerCase().includes('gentle')) {
+                    if (therapist.approach.includes('Humanistic')) {
+                        compatibility += 8;
+                        reasons.push('Gentle, person-centered approach');
+                    }
+                }
+
+                // Add some randomness and ensure reasons
+                compatibility = Math.min(compatibility + Math.floor(Math.random() * 10), 99);
+                
+                if (reasons.length === 0) {
+                    reasons = [
+                        'Strong clinical experience',
+                        'Positive patient feedback',
+                        'Compatible communication style'
+                    ];
+                } else if (reasons.length === 1) {
+                    reasons.push('Excellent patient reviews');
+                }
+
+                return {
+                    ...therapist,
+                    compatibility,
+                    reasons
+                };
+            }).sort((a, b) => b.compatibility - a.compatibility).slice(0, 3);
+        }
+
+        function bookSession(therapistName) {
+            alert(`Booking consultation with Dr. ${therapistName}. You would be redirected to the scheduling system.`);
+        }
+
+        // Initialize progress bar
+        updateProgress();
+    </script>
+</body>
+</html>
