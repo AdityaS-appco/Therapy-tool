@@ -1,10 +1,9 @@
 # Therapy-toolYourDOST Founder's Office Role - AI/Product Assignment
 
-
+<img width="1901" height="1020" alt="Screenshot 2025-09-29 203637" src="https://github.com/user-attachments/assets/d97772c5-926d-4308-8786-043f763df79d" />
+<img width="1915" height="987" alt="Screenshot 2025-09-29 203704" src="https://github.com/user-attachments/assets/8463df42-2a6f-48ba-bcc5-8673ba110ba3" />
 <img width="1916" height="990" alt="Screenshot 2025-09-29 203737" src="https://github.com/user-attachments/assets/6fefce47-fefa-4086-8967-67388618ca9f" />
 <img width="1916" height="1006" alt="Screenshot 2025-09-29 203727" src="https://github.com/user-attachments/assets/f51ea9bd-793a-4b91-8ebc-c565b40a1a33" />
-<img width="1915" height="987" alt="Screenshot 2025-09-29 203704" src="https://github.com/user-attachments/assets/8463df42-2a6f-48ba-bcc5-8673ba110ba3" />
-<img width="1901" height="1020" alt="Screenshot 2025-09-29 203637" src="https://github.com/user-attachments/assets/d97772c5-926d-4308-8786-043f763df79d" />
 <img width="1918" height="1011" alt="Screenshot 2025-09-29 203749" src="https://github.com/user-attachments/assets/4867e20b-6475-4a2a-af5d-71f1b2677c1f" />
 
 1. Use Case: AI-Powered Customer Support for Mental Health Platform
